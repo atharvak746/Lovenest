@@ -1,0 +1,209 @@
+{% extends "base.html" %}
+
+{% block title %}Mood Tracker - LoveNest{% endblock %}
+
+{% block content %}
+<div class="max-w-6xl mx-auto">
+    <div class="text-center mb-8">
+        <h1 class="text-3xl font-bold text-gray-800 mb-4">
+            <i class="fas fa-smile mr-2 text-love-pink"></i>
+            Mood Tracker
+        </h1>
+        <p class="text-gray-600">Track and share your emotions together</p>
+    </div>
+    
+    <!-- Add Mood Section -->
+    <div class="bg-white rounded-xl shadow-lg p-6 mb-8">
+        <h2 class="text-xl font-semibold text-gray-800 mb-4">How are you feeling right now?</h2>
+        <form id="moodForm" class="space-y-4">
+            <div class="grid grid-cols-4 md:grid-cols-8 gap-4">
+                <button type="button" class="mood-btn p-4 rounded-lg border-2 border-gray-200 hover:border-love-pink transition-colors" data-mood="happy">
+                    <div class="text-3xl mb-2">😊</div>
+                    <div class="text-sm">Happy</div>
+                </button>
+                <button type="button" class="mood-btn p-4 rounded-lg border-2 border-gray-200 hover:border-love-pink transition-colors" data-mood="love">
+                    <div class="text-3xl mb-2">😍</div>
+                    <div class="text-sm">In Love</div>
+                </button>
+                <button type="button" class="mood-btn p-4 rounded-lg border-2 border-gray-200 hover:border-love-pink transition-colors" data-mood="excited">
+                    <div class="text-3xl mb-2">🤩</div>
+                    <div class="text-sm">Excited</div>
+                </button>
+                <button type="button" class="mood-btn p-4 rounded-lg border-2 border-gray-200 hover:border-love-pink transition-colors" data-mood="calm">
+                    <div class="text-3xl mb-2">😌</div>
+                    <div class="text-sm">Calm</div>
+                </button>
+                <button type="button" class="mood-btn p-4 rounded-lg border-2 border-gray-200 hover:border-love-pink transition-colors" data-mood="romantic">
+                    <div class="text-3xl mb-2">🥰</div>
+                    <div class="text-sm">Romantic</div>
+                </button>
+                <button type="button" class="mood-btn p-4 rounded-lg border-2 border-gray-200 hover:border-love-pink transition-colors" data-mood="sad">
+                    <div class="text-3xl mb-2">😢</div>
+                    <div class="text-sm">Sad</div>
+                </button>
+                <button type="button" class="mood-btn p-4 rounded-lg border-2 border-gray-200 hover:border-love-pink transition-colors" data-mood="stressed">
+                    <div class="text-3xl mb-2">😰</div>
+                    <div class="text-sm">Stressed</div>
+                </button>
+                <button type="button" class="mood-btn p-4 rounded-lg border-2 border-gray-200 hover:border-love-pink transition-colors" data-mood="angry">
+                    <div class="text-3xl mb-2">😠</div>
+                    <div class="text-sm">Angry</div>
+                </button>
+            </div>
+            
+            <div>
+                <label for="note" class="block text-sm font-medium text-gray-700 mb-2">Add a note (optional)</label>
+                <textarea id="note" name="note" rows="3" 
+                          placeholder="What's making you feel this way?"
+                          class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-love-pink focus:border-transparent"></textarea>
+            </div>
+            
+            <button type="submit" id="submitMood" disabled
+                    class="gradient-bg text-white px-6 py-2 rounded-md hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed">
+                <i class="fas fa-heart mr-2"></i>
+                Save Mood
+            </button>
+        </form>
+    </div>
+    
+    <!-- Mood History -->
+    <div class="grid md:grid-cols-2 gap-8">
+        <!-- Your Moods -->
+        <div class="bg-white rounded-xl shadow-lg p-6">
+            <h2 class="text-xl font-semibold text-gray-800 mb-4">
+                <i class="fas fa-user mr-2 text-love-pink"></i>
+                Your Recent Moods
+            </h2>
+            {% if my_moods %}
+            <div class="space-y-4">
+                {% for mood in my_moods %}
+                <div class="border-l-4 border-love-pink pl-4 py-2">
+                    <div class="flex items-center mb-2">
+                        <span class="text-2xl mr-3">
+                            {% if mood[0] == 'happy' %}😊
+                            {% elif mood[0] == 'love' %}😍
+                            {% elif mood[0] == 'excited' %}🤩
+                            {% elif mood[0] == 'calm' %}😌
+                            {% elif mood[0] == 'romantic' %}🥰
+                            {% elif mood[0] == 'sad' %}😢
+                            {% elif mood[0] == 'stressed' %}😰
+                            {% elif mood[0] == 'angry' %}😠
+                            {% endif %}
+                        </span>
+                        <span class="font-semibold text-gray-800 capitalize">{{ mood[0] }}</span>
+                    </div>
+                    {% if mood[1] %}
+                    <p class="text-gray-600 mb-2">{{ mood[1] }}</p>
+                    {% endif %}
+                    <p class="text-sm text-gray-500">{{ mood[2].strftime('%b %d, %Y at %I:%M %p') }}</p>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <p class="text-gray-500 text-center py-8">No mood entries yet</p>
+            {% endif %}
+        </div>
+        
+        <!-- Partner's Moods -->
+        <div class="bg-white rounded-xl shadow-lg p-6">
+            <h2 class="text-xl font-semibold text-gray-800 mb-4">
+                <i class="fas fa-heart mr-2 text-love-purple"></i>
+                Your Partner's Recent Moods
+            </h2>
+            {% if partner_moods %}
+            <div class="space-y-4">
+                {% for mood in partner_moods %}
+                <div class="border-l-4 border-love-purple pl-4 py-2">
+                    <div class="flex items-center mb-2">
+                        <span class="text-2xl mr-3">
+                            {% if mood[0] == 'happy' %}😊
+                            {% elif mood[0] == 'love' %}😍
+                            {% elif mood[0] == 'excited' %}🤩
+                            {% elif mood[0] == 'calm' %}😌
+                            {% elif mood[0] == 'romantic' %}🥰
+                            {% elif mood[0] == 'sad' %}😢
+                            {% elif mood[0] == 'stressed' %}😰
+                            {% elif mood[0] == 'angry' %}😠
+                            {% endif %}
+                        </span>
+                        <span class="font-semibold text-gray-800 capitalize">{{ mood[0] }}</span>
+                    </div>
+                    <p class="text-sm text-gray-500">{{ mood[1].strftime('%b %d, %Y at %I:%M %p') }}</p>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <p class="text-gray-500 text-center py-8">No mood entries from your partner yet</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<script>
+let selectedMood = null;
+
+// Mood selection
+document.querySelectorAll('.mood-btn').forEach(btn => {
+    btn.addEventListener('click', function() {
+        // Remove previous selection
+        document.querySelectorAll('.mood-btn').forEach(b => {
+            b.classList.remove('border-love-pink', 'bg-pink-50');
+            b.classList.add('border-gray-200');
+        });
+        
+        // Add selection style
+        this.classList.remove('border-gray-200');
+        this.classList.add('border-love-pink', 'bg-pink-50');
+        
+        selectedMood = this.dataset.mood;
+        document.getElementById('submitMood').disabled = false;
+    });
+});
+
+// Form submission
+document.getElementById('moodForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    
+    if (!selectedMood) return;
+    
+    const note = document.getElementById('note').value;
+    
+    try {
+        const response = await fetch('{{ url_for("add_mood") }}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: `mood=${selectedMood}&note=${encodeURIComponent(note)}`
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            // Reset form
+            document.querySelectorAll('.mood-btn').forEach(b => {
+                b.classList.remove('border-love-pink', 'bg-pink-50');
+                b.classList.add('border-gray-200');
+            });
+            document.getElementById('note').value = '';
+            document.getElementById('submitMood').disabled = true;
+            selectedMood = null;
+            
+            // Show success message
+            const successDiv = document.createElement('div');
+            successDiv.className = 'bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4';
+            successDiv.textContent = 'Mood saved successfully!';
+            document.querySelector('.max-w-6xl').insertBefore(successDiv, document.querySelector('.max-w-6xl').firstChild);
+            
+            // Remove success message after 3 seconds
+            setTimeout(() => {
+                successDiv.remove();
+                location.reload(); // Refresh to show new mood
+            }, 2000);
+        }
+    } catch (error) {
+        console.error('Error saving mood:', error);
+    }
+});
+</script>
+{% endblock %}

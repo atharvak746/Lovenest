@@ -1,0 +1,125 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - LoveNest{% endblock %}
+
+{% block content %}
+<div class="space-y-8">
+    <!-- Welcome Section -->
+    <div class="bg-white rounded-xl shadow-lg p-8">
+        <div class="text-center">
+            <h1 class="text-3xl font-bold text-gray-800 mb-4">
+                Welcome to your LoveNest, {{ session.user_name }}!
+                <i class="fas fa-heart text-love-pink heart-animation ml-2"></i>
+            </h1>
+            {% if partner %}
+            <p class="text-lg text-gray-600">
+                Sharing this beautiful space with {{ partner[0] }} ({{ partner[1].title() }})
+            </p>
+            {% endif %}
+        </div>
+    </div>
+    
+    <!-- Love Counter -->
+    <div class="bg-gradient-to-r from-pink-500 to-purple-600 rounded-xl shadow-lg text-white p-8">
+        <div class="text-center">
+            <h2 class="text-2xl font-bold mb-4">
+                <i class="fas fa-calendar-heart mr-2"></i>
+                Together For
+            </h2>
+            <div class="text-6xl font-bold mb-2">
+                {{ couple_info[0] if couple_info else 0 }}
+            </div>
+            <div class="text-xl">
+                {{ "Days" if (couple_info and couple_info[0] != 1) else "Day" }}
+            </div>
+            {% if couple_info %}
+            <p class="mt-4 text-pink-200">
+                Since {{ couple_info[1].strftime('%B %d, %Y') }}
+            </p>
+            {% endif %}
+        </div>
+    </div>
+    
+    <!-- Quick Stats -->
+    <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div class="bg-white rounded-xl shadow-lg p-6 text-center hover:shadow-xl transition-shadow">
+            <i class="fas fa-clock text-3xl text-love-purple mb-3"></i>
+            <h3 class="text-lg font-semibold text-gray-800">Timeline</h3>
+            <p class="text-2xl font-bold text-love-purple">{{ recent_timeline|length }}</p>
+            <p class="text-sm text-gray-600">Recent entries</p>
+        </div>
+        
+        <div class="bg-white rounded-xl shadow-lg p-6 text-center hover:shadow-xl transition-shadow">
+            <i class="fas fa-smile text-3xl text-love-pink mb-3"></i>
+            <h3 class="text-lg font-semibold text-gray-800">Mood</h3>
+            <p class="text-2xl font-bold text-love-pink">{{ mood_stats|length }}</p>
+            <p class="text-sm text-gray-600">This week</p>
+        </div>
+        
+        <div class="bg-white rounded-xl shadow-lg p-6 text-center hover:shadow-xl transition-shadow">
+            <i class="fas fa-envelope text-3xl text-love-red mb-3"></i>
+            <h3 class="text-lg font-semibold text-gray-800">Letters</h3>
+            <p class="text-2xl font-bold text-love-red">∞</p>
+            <p class="text-sm text-gray-600">Love letters</p>
+        </div>
+        
+        <div class="bg-white rounded-xl shadow-lg p-6 text-center hover:shadow-xl transition-shadow">
+            <i class="fas fa-images text-3xl text-love-rose mb-3"></i>
+            <h3 class="text-lg font-semibold text-gray-800">Memories</h3>
+            <p class="text-2xl font-bold text-love-rose">∞</p>
+            <p class="text-sm text-gray-600">Shared photos</p>
+        </div>
+    </div>
+    
+    <!-- Recent Timeline -->
+    {% if recent_timeline %}
+    <div class="bg-white rounded-xl shadow-lg p-8">
+        <h2 class="text-2xl font-bold text-gray-800 mb-6">
+            <i class="fas fa-clock mr-2 text-love-purple"></i>
+            Recent Timeline
+        </h2>
+        <div class="space-y-4">
+            {% for entry in recent_timeline %}
+            <div class="border-l-4 border-love-pink pl-4 py-2">
+                <h3 class="font-semibold text-gray-800">{{ entry[0] }}</h3>
+                <p class="text-gray-600">{{ entry[1] }}</p>
+                <p class="text-sm text-gray-500 mt-1">{{ entry[2].strftime('%B %d, %Y at %I:%M %p') }}</p>
+            </div>
+            {% endfor %}
+        </div>
+        <div class="mt-6 text-center">
+            <a href="{{ url_for('timeline') }}" class="gradient-bg text-white px-6 py-2 rounded-lg hover:opacity-90 transition-opacity">
+                View Full Timeline
+            </a>
+        </div>
+    </div>
+    {% endif %}
+    
+    <!-- Quick Actions -->
+    <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <a href="{{ url_for('write_letter') }}" class="block bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-shadow group">
+            <div class="text-center">
+                <i class="fas fa-pen text-3xl text-love-pink mb-3 group-hover:scale-110 transition-transform"></i>
+                <h3 class="text-lg font-semibold text-gray-800">Write Love Letter</h3>
+                <p class="text-gray-600 mt-2">Express your feelings</p>
+            </div>
+        </a>
+        
+        <a href="{{ url_for('secret_chat') }}" class="block bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-shadow group">
+            <div class="text-center">
+                <i class="fas fa-comments text-3xl text-love-purple mb-3 group-hover:scale-110 transition-transform"></i>
+                <h3 class="text-lg font-semibold text-gray-800">Secret Chat</h3>
+                <p class="text-gray-600 mt-2">Private messages</p>
+            </div>
+        </a>
+        
+        <a href="{{ url_for('photo_gallery') }}" class="block bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-shadow group">
+            <div class="text-center">
+                <i class="fas fa-camera text-3xl text-love-red mb-3 group-hover:scale-110 transition-transform"></i>
+                <h3 class="text-lg font-semibold text-gray-800">Add Memory</h3>
+                <p class="text-gray-600 mt-2">Upload photos</p>
+            </div>
+        </a>
+    </div>
+</div>
+{% endblock %}

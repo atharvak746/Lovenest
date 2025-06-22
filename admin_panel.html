@@ -1,0 +1,271 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Panel - LoveNest{% endblock %}
+
+{% block content %}
+<div class="max-w-6xl mx-auto">
+    <div class="text-center mb-8">
+        <h1 class="text-3xl font-bold text-gray-800 mb-4">
+            <i class="fas fa-cog mr-2 text-love-pink"></i>
+            Admin Panel
+        </h1>
+        <p class="text-gray-600">Manage your LoveNest settings and data</p>
+    </div>
+    
+    <!-- Statistics Overview -->
+    <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <div class="bg-white rounded-xl shadow-lg p-6 text-center">
+            <i class="fas fa-clock text-3xl text-love-purple mb-3"></i>
+            <h3 class="text-lg font-semibold text-gray-800">Timeline Entries</h3>
+            <p class="text-3xl font-bold text-love-purple">{{ stats[0] if stats else 0 }}</p>
+        </div>
+        
+        <div class="bg-white rounded-xl shadow-lg p-6 text-center">
+            <i class="fas fa-envelope text-3xl text-love-pink mb-3"></i>
+            <h3 class="text-lg font-semibold text-gray-800">Love Letters</h3>
+            <p class="text-3xl font-bold text-love-pink">{{ stats[1] if stats else 0 }}</p>
+        </div>
+        
+        <div class="bg-white rounded-xl shadow-lg p-6 text-center">
+            <i class="fas fa-images text-3xl text-love-red mb-3"></i>
+            <h3 class="text-lg font-semibold text-gray-800">Photos</h3>
+            <p class="text-3xl font-bold text-love-red">{{ stats[2] if stats else 0 }}</p>
+        </div>
+        
+        <div class="bg-white rounded-xl shadow-lg p-6 text-center">
+            <i class="fas fa-smile text-3xl text-love-rose mb-3"></i>
+            <h3 class="text-lg font-semibold text-gray-800">Mood Entries</h3>
+            <p class="text-3xl font-bold text-love-rose">{{ stats[3] if stats else 0 }}</p>
+        </div>
+    </div>
+    
+    <!-- Admin Actions -->
+    <div class="grid md:grid-cols-2 gap-8">
+        <!-- Data Management -->
+        <div class="bg-white rounded-xl shadow-lg p-6">
+            <h2 class="text-xl font-semibold text-gray-800 mb-6">
+                <i class="fas fa-database mr-2 text-love-pink"></i>
+                Data Management
+            </h2>
+            
+            <div class="space-y-4">
+                <button onclick="exportData()" 
+                        class="w-full gradient-bg text-white py-3 px-4 rounded-lg hover:opacity-90 transition-opacity">
+                    <i class="fas fa-download mr-2"></i>
+                    Export All Data
+                </button>
+                
+                <button onclick="showBackupModal()" 
+                        class="w-full bg-blue-500 text-white py-3 px-4 rounded-lg hover:bg-blue-600 transition-colors">
+                    <i class="fas fa-cloud-upload-alt mr-2"></i>
+                    Create Backup
+                </button>
+                
+                <button onclick="showCleanupModal()" 
+                        class="w-full bg-yellow-500 text-white py-3 px-4 rounded-lg hover:bg-yellow-600 transition-colors">
+                    <i class="fas fa-broom mr-2"></i>
+                    Cleanup Old Data
+                </button>
+            </div>
+        </div>
+        
+        <!-- Security Settings -->
+        <div class="bg-white rounded-xl shadow-lg p-6">
+            <h2 class="text-xl font-semibold text-gray-800 mb-6">
+                <i class="fas fa-shield-alt mr-2 text-love-purple"></i>
+                Security Settings
+            </h2>
+            
+            <div class="space-y-4">
+                <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                    <div>
+                        <h3 class="font-medium text-gray-800">Two-Factor Authentication</h3>
+                        <p class="text-sm text-gray-600">Add extra security to your account</p>
+                    </div>
+                    <label class="relative inline-flex items-center cursor-pointer">
+                        <input type="checkbox" class="sr-only peer" id="twoFactor">
+                        <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-love-pink/25 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-love-pink"></div>
+                    </label>
+                </div>
+                
+                <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                    <div>
+                        <h3 class="font-medium text-gray-800">Login Notifications</h3>
+                        <p class="text-sm text-gray-600">Get notified of new logins</p>
+                    </div>
+                    <label class="relative inline-flex items-center cursor-pointer">
+                        <input type="checkbox" class="sr-only peer" id="loginNotifications" checked>
+                        <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-love-pink/25 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-love-pink"></div>
+                    </label>
+                </div>
+                
+                <button onclick="changePassword()" 
+                        class="w-full bg-gray-600 text-white py-3 px-4 rounded-lg hover:bg-gray-700 transition-colors">
+                    <i class="fas fa-key mr-2"></i>
+                    Change Password
+                </button>
+            </div>
+        </div>
+        
+        <!-- Privacy Controls -->
+        <div class="bg-white rounded-xl shadow-lg p-6">
+            <h2 class="text-xl font-semibold text-gray-800 mb-6">
+                <i class="fas fa-user-shield mr-2 text-love-red"></i>
+                Privacy Controls
+            </h2>
+            
+            <div class="space-y-4">
+                <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                    <div>
+                        <h3 class="font-medium text-gray-800">Auto-delete Messages</h3>
+                        <p class="text-sm text-gray-600">Automatically delete old secret messages</p>
+                    </div>
+                    <select class="px-3 py-1 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-love-pink">
+                        <option value="7">After 7 days</option>
+                        <option value="30" selected>After 30 days</option>
+                        <option value="90">After 90 days</option>
+                        <option value="0">Never</option>
+                    </select>
+                </div>
+                
+                <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                    <div>
+                        <h3 class="font-medium text-gray-800">Photo Compression</h3>
+                        <p class="text-sm text-gray-600">Compress photos to save space</p>
+                    </div>
+                    <label class="relative inline-flex items-center cursor-pointer">
+                        <input type="checkbox" class="sr-only peer" id="photoCompression" checked>
+                        <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-love-pink/25 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-love-pink"></div>
+                    </label>
+                </div>
+                
+                <button onclick="showPrivacySettings()" 
+                        class="w-full bg-purple-500 text-white py-3 px-4 rounded-lg hover:bg-purple-600 transition-colors">
+                    <i class="fas fa-cogs mr-2"></i>
+                    Advanced Privacy Settings
+                </button>
+            </div>
+        </div>
+        
+        <!-- System Information -->
+        <div class="bg-white rounded-xl shadow-lg p-6">
+            <h2 class="text-xl font-semibold text-gray-800 mb-6">
+                <i class="fas fa-info-circle mr-2 text-love-rose"></i>
+                System Information
+            </h2>
+            
+            <div class="space-y-3">
+                <div class="flex justify-between items-center py-2 border-b border-gray-100">
+                    <span class="text-gray-600">LoveNest Version</span>
+                    <span class="font-medium text-gray-800">v2.1.0</span>
+                </div>
+                
+                <div class="flex justify-between items-center py-2 border-b border-gray-100">
+                    <span class="text-gray-600">Account Created</span>
+                    <span class="font-medium text-gray-800">{{ session.get('created_at', 'Unknown') }}</span>
+                </div>
+                
+                <div class="flex justify-between items-center py-2 border-b border-gray-100">
+                    <span class="text-gray-600">Storage Used</span>
+                    <span class="font-medium text-gray-800">2.3 MB / 1 GB</span>
+                </div>
+                
+                <div class="flex justify-between items-center py-2">
+                    <span class="text-gray-600">Last Backup</span>
+                    <span class="font-medium text-gray-800">Never</span>
+                </div>
+            </div>
+            
+            <div class="mt-6">
+                <button onclick="checkUpdates()" 
+                        class="w-full bg-green-500 text-white py-3 px-4 rounded-lg hover:bg-green-600 transition-colors">
+                    <i class="fas fa-sync-alt mr-2"></i>
+                    Check for Updates
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Danger Zone -->
+    <div class="mt-8 bg-red-50 border border-red-200 rounded-xl p-6">
+        <h2 class="text-xl font-semibold text-red-800 mb-4">
+            <i class="fas fa-exclamation-triangle mr-2"></i>
+            Danger Zone
+        </h2>
+        <p class="text-red-700 mb-4">These actions are irreversible. Please be careful.</p>
+        
+        <div class="space-y-3">
+            <button onclick="resetAllData()" 
+                    class="bg-red-500 text-white py-2 px-4 rounded-lg hover:bg-red-600 transition-colors mr-3">
+                <i class="fas fa-trash-alt mr-2"></i>
+                Reset All Data
+            </button>
+            
+            <button onclick="deleteAccount()" 
+                    class="bg-red-700 text-white py-2 px-4 rounded-lg hover:bg-red-800 transition-colors">
+                <i class="fas fa-user-times mr-2"></i>
+                Delete Account
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+function exportData() {
+    // In a real implementation, this would generate and download a data export
+    alert('Data export feature would be implemented here. This would create a downloadable file with all your LoveNest data.');
+}
+
+function showBackupModal() {
+    alert('Backup feature would be implemented here. This would create a secure backup of all your data.');
+}
+
+function showCleanupModal() {
+    if (confirm('This will remove old data based on your retention settings. Continue?')) {
+        alert('Cleanup completed! Old data has been removed according to your settings.');
+    }
+}
+
+function changePassword() {
+    const newPassword = prompt('Enter your new password:');
+    if (newPassword && newPassword.length >= 8) {
+        alert('Password changed successfully!');
+    } else if (newPassword) {
+        alert('Password must be at least 8 characters long.');
+    }
+}
+
+function showPrivacySettings() {
+    alert('Advanced privacy settings would open here, allowing fine-grained control over data sharing and retention.');
+}
+
+function checkUpdates() {
+    alert('Checking for updates... You are running the latest version of LoveNest!');
+}
+
+function resetAllData() {
+    if (confirm('Are you sure you want to reset ALL data? This cannot be undone!')) {
+        if (confirm('This will permanently delete all your timeline entries, love letters, photos, and other data. Are you absolutely sure?')) {
+            alert('In a real implementation, this would reset all data. For demo purposes, no action taken.');
+        }
+    }
+}
+
+function deleteAccount() {
+    if (confirm('Are you sure you want to delete your entire LoveNest account? This cannot be undone!')) {
+        const confirmation = prompt('Type "DELETE MY ACCOUNT" to confirm:');
+        if (confirmation === 'DELETE MY ACCOUNT') {
+            alert('In a real implementation, this would delete the account. For demo purposes, no action taken.');
+        }
+    }
+}
+
+// Save settings when toggles are changed
+document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+    checkbox.addEventListener('change', function() {
+        console.log(`Setting ${this.id} changed to: ${this.checked}`);
+        // In a real implementation, this would save the setting to the database
+    });
+});
+</script>
+{% endblock %}

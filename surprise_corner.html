@@ -1,0 +1,135 @@
+{% extends "base.html" %}
+
+{% block title %}Surprise Corner - LoveNest{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto">
+    <div class="text-center mb-8">
+        <h1 class="text-3xl font-bold text-gray-800 mb-4">
+            <i class="fas fa-gift mr-2 text-love-pink"></i>
+            Surprise Corner
+        </h1>
+        <p class="text-gray-600">Plan beautiful surprises for each other</p>
+    </div>
+    
+    <!-- Add Surprise Form -->
+    <div class="bg-white rounded-xl shadow-lg p-6 mb-8">
+        <h2 class="text-xl font-semibold text-gray-800 mb-4">Plan a Surprise</h2>
+        <form method="POST" action="{{ url_for('add_surprise') }}" class="space-y-4">
+            <div class="grid md:grid-cols-2 gap-4">
+                <div>
+                    <label for="title" class="block text-sm font-medium text-gray-700 mb-2">Surprise Title</label>
+                    <input type="text" id="title" name="title" required
+                           placeholder="e.g., Dinner Date, Weekend Getaway"
+                           class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-love-pink focus:border-transparent">
+                </div>
+                <div>
+                    <label for="surprise_date" class="block text-sm font-medium text-gray-700 mb-2">Surprise Date</label>
+                    <input type="date" id="surprise_date" name="surprise_date" required
+                           class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-love-pink focus:border-transparent">
+                </div>
+            </div>
+            
+            <div>
+                <label for="description" class="block text-sm font-medium text-gray-700 mb-2">Description</label>
+                <textarea id="description" name="description" rows="4"
+                          placeholder="Describe your surprise plans..."
+                          class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-love-pink focus:border-transparent"></textarea>
+            </div>
+            
+            <div class="text-center">
+                <button type="submit" 
+                        class="gradient-bg text-white px-8 py-3 rounded-lg font-semibold hover:opacity-90 transition-opacity">
+                    <i class="fas fa-plus mr-2"></i>
+                    Plan Surprise
+                </button>
+            </div>
+        </form>
+    </div>
+    
+    <!-- Surprises List -->
+    {% if surprises %}
+    <div class="space-y-6">
+        <h2 class="text-2xl font-semibold text-gray-800">Planned Surprises</h2>
+        
+        <div class="grid md:grid-cols-2 gap-6">
+            {% for surprise in surprises %}
+            <div class="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow">
+                <div class="gradient-bg p-4">
+                    <h3 class="text-white font-semibold text-lg">{{ surprise[1] }}</h3>
+                    <p class="text-pink-200 text-sm">
+                        {% if surprise[4] == session.user_id %}
+                            <i class="fas fa-user mr-1"></i>
+                            Planned by: You
+                        {% else %}
+                            <i class="fas fa-heart mr-1"></i>
+                            Planned by: Your Partner
+                        {% endif %}
+                    </p>
+                </div>
+                
+                <div class="p-6">
+                    <div class="flex items-center mb-4">
+                        <i class="fas fa-calendar text-love-pink mr-2"></i>
+                        <span class="text-gray-700 font-medium">{{ surprise[3].strftime('%B %d, %Y') }}</span>
+                        
+                        {% set days_until = (surprise[3] - today).days %}
+                        {% if days_until > 0 %}
+                        <span class="ml-auto bg-blue-100 text-blue-800 text-xs font-medium px-2 py-1 rounded">
+                            {{ days_until }} day{{ 's' if days_until != 1 else '' }} away
+                        </span>
+                        {% elif days_until == 0 %}
+                        <span class="ml-auto bg-green-100 text-green-800 text-xs font-medium px-2 py-1 rounded">
+                            Today!
+                        </span>
+                        {% else %}
+                        <span class="ml-auto bg-gray-100 text-gray-600 text-xs font-medium px-2 py-1 rounded">
+                            {{ abs(days_until) }} day{{ 's' if abs(days_until) != 1 else '' }} ago
+                        </span>
+                        {% endif %}
+                    </div>
+                    
+                    {% if surprise[2] %}
+                    <p class="text-gray-600 mb-4">{{ surprise[2] }}</p>
+                    {% endif %}
+                    
+                    <div class="flex justify-between items-center">
+                        <p class="text-xs text-gray-500">
+                            <i class="fas fa-clock mr-1"></i>
+                            Planned on {{ surprise[6].strftime('%b %d, %Y') if surprise[6] else 'Unknown' }}
+                        </p>
+                        
+                        {% if not surprise[5] %}
+                        <span class="bg-yellow-100 text-yellow-800 text-xs font-medium px-2 py-1 rounded">
+                            <i class="fas fa-eye-slash mr-1"></i>
+                            Secret
+                        </span>
+                        {% else %}
+                        <span class="bg-green-100 text-green-800 text-xs font-medium px-2 py-1 rounded">
+                            <i class="fas fa-eye mr-1"></i>
+                            Revealed
+                        </span>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% else %}
+    <div class="bg-white rounded-xl shadow-lg p-8 text-center">
+        <i class="fas fa-gift text-6xl text-gray-300 mb-4"></i>
+        <h3 class="text-xl font-semibold text-gray-500 mb-2">No surprises planned yet</h3>
+        <p class="text-gray-400">Start planning beautiful surprises for your loved one!</p>
+    </div>
+    {% endif %}
+</div>
+
+<script>
+// Set minimum date to today
+document.addEventListener('DOMContentLoaded', function() {
+    const today = new Date().toISOString().split('T')[0];
+    document.getElementById('surprise_date').setAttribute('min', today);
+});
+</script>
+{% endblock %}

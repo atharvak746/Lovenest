@@ -1,0 +1,320 @@
+{% extends "base.html" %}
+
+{% block title %}Intimacy Zone - LoveNest{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto">
+    <div class="text-center mb-8">
+        <h1 class="text-3xl font-bold text-gray-800 mb-4">
+            <i class="fas fa-lock mr-2 text-love-pink"></i>
+            Intimacy Zone
+        </h1>
+        <p class="text-gray-600">Your most private and secure space</p>
+    </div>
+    
+    <!-- Security Notice -->
+    <div class="bg-gradient-to-r from-pink-500 to-purple-600 rounded-xl text-white p-6 mb-8">
+        <div class="flex items-center mb-4">
+            <i class="fas fa-shield-alt text-2xl mr-3"></i>
+            <h2 class="text-xl font-bold">Ultra-Secure Zone</h2>
+        </div>
+        <p class="mb-4">This is your most private space. All content here is encrypted and completely secure.</p>
+        <div class="grid md:grid-cols-3 gap-4 text-sm">
+            <div class="flex items-center">
+                <i class="fas fa-lock mr-2"></i>
+                End-to-end encrypted
+            </div>
+            <div class="flex items-center">
+                <i class="fas fa-eye-slash mr-2"></i>
+                Private between you two
+            </div>
+            <div class="flex items-center">
+                <i class="fas fa-server mr-2"></i>
+                Secure servers
+            </div>
+        </div>
+    </div>
+    
+    <!-- Intimacy Features -->
+    <div class="grid md:grid-cols-2 gap-8">
+        <!-- Private Notes -->
+        <div class="bg-white rounded-xl shadow-lg p-6">
+            <h3 class="text-xl font-semibold text-gray-800 mb-4">
+                <i class="fas fa-sticky-note mr-2 text-love-pink"></i>
+                Private Notes
+            </h3>
+            <p class="text-gray-600 mb-4">Share your most intimate thoughts and feelings securely.</p>
+            
+            <div class="space-y-4">
+                <textarea id="privateNote" rows="4" 
+                          placeholder="Share your deepest thoughts..."
+                          class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-love-pink focus:border-transparent resize-none"></textarea>
+                <button onclick="savePrivateNote()" 
+                        class="gradient-bg text-white px-6 py-2 rounded-lg hover:opacity-90 transition-opacity">
+                    <i class="fas fa-save mr-2"></i>
+                    Save Note
+                </button>
+            </div>
+            
+            <div id="privateNotes" class="mt-6 space-y-3">
+                <!-- Private notes will be loaded here -->
+            </div>
+        </div>
+        
+        <!-- Relationship Goals -->
+        <div class="bg-white rounded-xl shadow-lg p-6">
+            <h3 class="text-xl font-semibold text-gray-800 mb-4">
+                <i class="fas fa-heart mr-2 text-love-purple"></i>
+                Relationship Goals
+            </h3>
+            <p class="text-gray-600 mb-4">Set and track your intimate relationship goals together.</p>
+            
+            <div class="space-y-4">
+                <input type="text" id="relationshipGoal" 
+                       placeholder="Add a relationship goal..."
+                       class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-love-pink focus:border-transparent">
+                <button onclick="addRelationshipGoal()" 
+                        class="gradient-bg text-white px-6 py-2 rounded-lg hover:opacity-90 transition-opacity">
+                    <i class="fas fa-plus mr-2"></i>
+                    Add Goal
+                </button>
+            </div>
+            
+            <div id="relationshipGoals" class="mt-6 space-y-3">
+                <!-- Relationship goals will be loaded here -->
+            </div>
+        </div>
+        
+        <!-- Intimate Calendar -->
+        <div class="bg-white rounded-xl shadow-lg p-6">
+            <h3 class="text-xl font-semibold text-gray-800 mb-4">
+                <i class="fas fa-calendar-heart mr-2 text-love-red"></i>
+                Intimate Calendar
+            </h3>
+            <p class="text-gray-600 mb-4">Track special intimate moments and plan future ones.</p>
+            
+            <div class="space-y-4">
+                <input type="date" id="intimateDate" 
+                       class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-love-pink focus:border-transparent">
+                <input type="text" id="intimateEvent" 
+                       placeholder="Describe the moment..."
+                       class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-love-pink focus:border-transparent">
+                <button onclick="addIntimateEvent()" 
+                        class="gradient-bg text-white px-6 py-2 rounded-lg hover:opacity-90 transition-opacity">
+                    <i class="fas fa-plus mr-2"></i>
+                    Add Event
+                </button>
+            </div>
+            
+            <div id="intimateEvents" class="mt-6 space-y-3">
+                <!-- Intimate events will be loaded here -->
+            </div>
+        </div>
+        
+        <!-- Secure File Sharing -->
+        <div class="bg-white rounded-xl shadow-lg p-6">
+            <h3 class="text-xl font-semibold text-gray-800 mb-4">
+                <i class="fas fa-file-lock mr-2 text-love-rose"></i>
+                Secure File Sharing
+            </h3>
+            <p class="text-gray-600 mb-4">Share private files with maximum security and encryption.</p>
+            
+            <div class="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center hover:border-love-pink transition-colors">
+                <i class="fas fa-cloud-upload-alt text-3xl text-gray-400 mb-3"></i>
+                <p class="text-gray-600 mb-3">Drag and drop files here or click to browse</p>
+                <input type="file" id="secureFile" class="hidden" multiple>
+                <button onclick="document.getElementById('secureFile').click()" 
+                        class="gradient-bg text-white px-6 py-2 rounded-lg hover:opacity-90 transition-opacity">
+                    Choose Files
+                </button>
+            </div>
+            
+            <div id="secureFiles" class="mt-6 space-y-3">
+                <!-- Secure files will be loaded here -->
+            </div>
+        </div>
+    </div>
+    
+    <!-- Privacy Reminder -->
+    <div class="mt-8 bg-yellow-50 border border-yellow-200 rounded-xl p-6">
+        <div class="flex items-center mb-3">
+            <i class="fas fa-exclamation-triangle text-yellow-600 mr-2"></i>
+            <h3 class="text-lg font-semibold text-yellow-800">Privacy Reminder</h3>
+        </div>
+        <p class="text-yellow-700">
+            Remember that this is a shared intimate space between you and your partner. 
+            Always communicate openly and respect each other's boundaries and privacy preferences.
+        </p>
+    </div>
+</div>
+
+<script>
+// Initialize data storage
+let privateNotes = JSON.parse(localStorage.getItem('intimacy_private_notes') || '[]');
+let relationshipGoals = JSON.parse(localStorage.getItem('intimacy_relationship_goals') || '[]');
+let intimateEvents = JSON.parse(localStorage.getItem('intimacy_intimate_events') || '[]');
+
+// Load data on page load
+document.addEventListener('DOMContentLoaded', function() {
+    loadPrivateNotes();
+    loadRelationshipGoals();
+    loadIntimateEvents();
+    
+    // Set minimum date to today for intimate calendar
+    const today = new Date().toISOString().split('T')[0];
+    document.getElementById('intimateDate').setAttribute('min', today);
+});
+
+function savePrivateNote() {
+    const noteText = document.getElementById('privateNote').value.trim();
+    if (!noteText) return;
+    
+    const note = {
+        id: Date.now(),
+        text: noteText,
+        timestamp: new Date().toISOString(),
+        author: '{{ session.user_name }}'
+    };
+    
+    privateNotes.unshift(note);
+    localStorage.setItem('intimacy_private_notes', JSON.stringify(privateNotes));
+    
+    document.getElementById('privateNote').value = '';
+    loadPrivateNotes();
+}
+
+function loadPrivateNotes() {
+    const container = document.getElementById('privateNotes');
+    if (privateNotes.length === 0) {
+        container.innerHTML = '<p class="text-gray-500 text-sm">No private notes yet</p>';
+        return;
+    }
+    
+    container.innerHTML = privateNotes.map(note => `
+        <div class="bg-pink-50 border border-pink-200 rounded-lg p-4">
+            <p class="text-gray-700 mb-2">${escapeHtml(note.text)}</p>
+            <div class="flex justify-between items-center text-xs text-gray-500">
+                <span>By ${note.author}</span>
+                <span>${new Date(note.timestamp).toLocaleDateString()}</span>
+            </div>
+        </div>
+    `).join('');
+}
+
+function addRelationshipGoal() {
+    const goalText = document.getElementById('relationshipGoal').value.trim();
+    if (!goalText) return;
+    
+    const goal = {
+        id: Date.now(),
+        text: goalText,
+        completed: false,
+        timestamp: new Date().toISOString()
+    };
+    
+    relationshipGoals.unshift(goal);
+    localStorage.setItem('intimacy_relationship_goals', JSON.stringify(relationshipGoals));
+    
+    document.getElementById('relationshipGoal').value = '';
+    loadRelationshipGoals();
+}
+
+function loadRelationshipGoals() {
+    const container = document.getElementById('relationshipGoals');
+    if (relationshipGoals.length === 0) {
+        container.innerHTML = '<p class="text-gray-500 text-sm">No relationship goals yet</p>';
+        return;
+    }
+    
+    container.innerHTML = relationshipGoals.map(goal => `
+        <div class="flex items-center justify-between bg-purple-50 border border-purple-200 rounded-lg p-4">
+            <div class="flex items-center">
+                <input type="checkbox" ${goal.completed ? 'checked' : ''} 
+                       onchange="toggleGoal(${goal.id})"
+                       class="mr-3 text-love-purple focus:ring-love-purple">
+                <span class="${goal.completed ? 'line-through text-gray-500' : 'text-gray-700'}">${escapeHtml(goal.text)}</span>
+            </div>
+            <button onclick="removeGoal(${goal.id})" class="text-red-500 hover:text-red-700">
+                <i class="fas fa-trash text-sm"></i>
+            </button>
+        </div>
+    `).join('');
+}
+
+function toggleGoal(goalId) {
+    const goal = relationshipGoals.find(g => g.id === goalId);
+    if (goal) {
+        goal.completed = !goal.completed;
+        localStorage.setItem('intimacy_relationship_goals', JSON.stringify(relationshipGoals));
+        loadRelationshipGoals();
+    }
+}
+
+function removeGoal(goalId) {
+    relationshipGoals = relationshipGoals.filter(g => g.id !== goalId);
+    localStorage.setItem('intimacy_relationship_goals', JSON.stringify(relationshipGoals));
+    loadRelationshipGoals();
+}
+
+function addIntimateEvent() {
+    const eventDate = document.getElementById('intimateDate').value;
+    const eventText = document.getElementById('intimateEvent').value.trim();
+    
+    if (!eventDate || !eventText) return;
+    
+    const event = {
+        id: Date.now(),
+        date: eventDate,
+        text: eventText,
+        timestamp: new Date().toISOString()
+    };
+    
+    intimateEvents.unshift(event);
+    localStorage.setItem('intimacy_intimate_events', JSON.stringify(intimateEvents));
+    
+    document.getElementById('intimateDate').value = '';
+    document.getElementById('intimateEvent').value = '';
+    loadIntimateEvents();
+}
+
+function loadIntimateEvents() {
+    const container = document.getElementById('intimateEvents');
+    if (intimateEvents.length === 0) {
+        container.innerHTML = '<p class="text-gray-500 text-sm">No intimate events yet</p>';
+        return;
+    }
+    
+    container.innerHTML = intimateEvents.map(event => `
+        <div class="bg-red-50 border border-red-200 rounded-lg p-4">
+            <div class="flex justify-between items-start mb-2">
+                <h4 class="font-semibold text-gray-800">${new Date(event.date).toLocaleDateString()}</h4>
+                <button onclick="removeEvent(${event.id})" class="text-red-500 hover:text-red-700">
+                    <i class="fas fa-trash text-sm"></i>
+                </button>
+            </div>
+            <p class="text-gray-700">${escapeHtml(event.text)}</p>
+        </div>
+    `).join('');
+}
+
+function removeEvent(eventId) {
+    intimateEvents = intimateEvents.filter(e => e.id !== eventId);
+    localStorage.setItem('intimacy_intimate_events', JSON.stringify(intimateEvents));
+    loadIntimateEvents();
+}
+
+function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+}
+
+// Secure file handling (placeholder)
+document.getElementById('secureFile').addEventListener('change', function(e) {
+    const files = Array.from(e.target.files);
+    if (files.length > 0) {
+        alert(`Selected ${files.length} file(s). In a real implementation, these would be encrypted and uploaded securely.`);
+    }
+});
+</script>
+{% endblock %}

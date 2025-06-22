@@ -1,0 +1,259 @@
+{% extends "base.html" %}
+
+{% block title %}Couple Quiz - LoveNest{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto">
+    <div class="text-center mb-8">
+        <h1 class="text-3xl font-bold text-gray-800 mb-4">
+            <i class="fas fa-question-circle mr-2 text-love-pink"></i>
+            Couple Quiz Game
+        </h1>
+        <p class="text-gray-600">Test how well you know each other with fun questions</p>
+    </div>
+    
+    <!-- Add Question Form -->
+    <div class="bg-white rounded-xl shadow-lg p-6 mb-8">
+        <h2 class="text-xl font-semibold text-gray-800 mb-4">Add New Question</h2>
+        <form method="POST" action="{{ url_for('add_quiz_question') }}" class="space-y-4">
+            <div>
+                <label for="question" class="block text-sm font-medium text-gray-700 mb-2">Question</label>
+                <input type="text" id="question" name="question" required
+                       placeholder="e.g., What's my favorite color?"
+                       class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-love-pink focus:border-transparent">
+            </div>
+            <div>
+                <label for="answer" class="block text-sm font-medium text-gray-700 mb-2">Answer</label>
+                <input type="text" id="answer" name="answer" required
+                       placeholder="The correct answer"
+                       class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-love-pink focus:border-transparent">
+            </div>
+            <button type="submit" 
+                    class="gradient-bg text-white px-6 py-2 rounded-md hover:opacity-90 transition-opacity">
+                <i class="fas fa-plus mr-2"></i>
+                Add Question
+            </button>
+        </form>
+    </div>
+    
+    <!-- Quiz Questions -->
+    {% if questions %}
+    <div class="space-y-6">
+        <div class="flex justify-between items-center">
+            <h2 class="text-2xl font-semibold text-gray-800">Quiz Questions</h2>
+            <button onclick="startQuiz()" 
+                    class="gradient-bg text-white px-6 py-2 rounded-lg hover:opacity-90 transition-opacity">
+                <i class="fas fa-play mr-2"></i>
+                Start Quiz
+            </button>
+        </div>
+        
+        <div class="grid md:grid-cols-2 gap-6">
+            {% for question in questions %}
+            <div class="bg-white rounded-xl shadow-lg p-6 quiz-card">
+                <div class="mb-4">
+                    <h3 class="font-semibold text-gray-800 mb-2">{{ question[1] }}</h3>
+                    <p class="text-sm text-gray-600">
+                        Created by: {% if question[3] == session.user_id %}You{% else %}Your Partner{% endif %}
+                    </p>
+                    <p class="text-xs text-gray-500">{{ question[4].strftime('%b %d, %Y') }}</p>
+                </div>
+                
+                <div class="quiz-answer hidden">
+                    <p class="text-love-pink font-semibold">Answer: {{ question[2] }}</p>
+                </div>
+                
+                <button onclick="toggleAnswer(this)" 
+                        class="text-love-pink hover:text-love-purple transition-colors text-sm">
+                    <i class="fas fa-eye mr-1"></i>
+                    Reveal Answer
+                </button>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% else %}
+    <div class="bg-white rounded-xl shadow-lg p-8 text-center">
+        <i class="fas fa-question-circle text-6xl text-gray-300 mb-4"></i>
+        <h3 class="text-xl font-semibold text-gray-500 mb-2">No questions yet</h3>
+        <p class="text-gray-400">Start creating fun questions to test each other!</p>
+    </div>
+    {% endif %}
+</div>
+
+<!-- Quiz Modal -->
+<div id="quizModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50 p-4">
+    <div class="bg-white rounded-xl max-w-2xl w-full">
+        <div class="gradient-bg p-6">
+            <div class="flex justify-between items-center">
+                <h2 class="text-white text-xl font-bold">Quiz Time!</h2>
+                <button onclick="closeQuiz()" class="text-white hover:text-pink-200">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+        </div>
+        <div class="p-6">
+            <div id="quizContent">
+                <div class="text-center mb-6">
+                    <p class="text-lg text-gray-700">Question <span id="currentQ">1</span> of <span id="totalQ">0</span></p>
+                    <div class="w-full bg-gray-200 rounded-full h-2 mt-2">
+                        <div id="progressBar" class="gradient-bg h-2 rounded-full transition-all duration-300" style="width: 0%"></div>
+                    </div>
+                </div>
+                
+                <div id="questionCard" class="mb-6">
+                    <h3 id="questionText" class="text-xl font-semibold text-gray-800 mb-4"></h3>
+                    <input type="text" id="userAnswer" 
+                           placeholder="Your answer..."
+                           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-love-pink focus:border-transparent mb-4">
+                    <button onclick="checkAnswer()" 
+                            class="gradient-bg text-white px-6 py-2 rounded-lg hover:opacity-90 transition-opacity">
+                        Check Answer
+                    </button>
+                </div>
+                
+                <div id="resultCard" class="hidden text-center">
+                    <div id="answerResult" class="mb-4"></div>
+                    <button onclick="nextQuestion()" 
+                            class="gradient-bg text-white px-6 py-2 rounded-lg hover:opacity-90 transition-opacity">
+                        Next Question
+                    </button>
+                </div>
+                
+                <div id="finalResult" class="hidden text-center">
+                    <h3 class="text-2xl font-bold text-gray-800 mb-4">Quiz Complete!</h3>
+                    <p class="text-lg text-gray-600 mb-4">Your Score: <span id="finalScore" class="text-love-pink font-bold"></span></p>
+                    <button onclick="restartQuiz()" 
+                            class="gradient-bg text-white px-6 py-2 rounded-lg hover:opacity-90 transition-opacity mr-3">
+                        Play Again
+                    </button>
+                    <button onclick="closeQuiz()" 
+                            class="bg-gray-500 text-white px-6 py-2 rounded-lg hover:bg-gray-600 transition-colors">
+                        Close
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+let quizQuestions = [];
+let currentQuestionIndex = 0;
+let score = 0;
+
+function toggleAnswer(button) {
+    const card = button.closest('.quiz-card');
+    const answer = card.querySelector('.quiz-answer');
+    
+    if (answer.classList.contains('hidden')) {
+        answer.classList.remove('hidden');
+        button.innerHTML = '<i class="fas fa-eye-slash mr-1"></i> Hide Answer';
+    } else {
+        answer.classList.add('hidden');
+        button.innerHTML = '<i class="fas fa-eye mr-1"></i> Reveal Answer';
+    }
+}
+
+function startQuiz() {
+    quizQuestions = {{ questions | tojson }};
+    if (quizQuestions.length === 0) return;
+    
+    // Shuffle questions
+    quizQuestions = quizQuestions.sort(() => Math.random() - 0.5);
+    
+    currentQuestionIndex = 0;
+    score = 0;
+    
+    document.getElementById('totalQ').textContent = quizQuestions.length;
+    document.getElementById('quizModal').classList.remove('hidden');
+    document.getElementById('quizModal').classList.add('flex');
+    
+    showQuestion();
+}
+
+function showQuestion() {
+    if (currentQuestionIndex >= quizQuestions.length) {
+        showFinalResult();
+        return;
+    }
+    
+    const question = quizQuestions[currentQuestionIndex];
+    document.getElementById('currentQ').textContent = currentQuestionIndex + 1;
+    document.getElementById('questionText').textContent = question[1];
+    document.getElementById('userAnswer').value = '';
+    document.getElementById('userAnswer').focus();
+    
+    // Update progress bar
+    const progress = ((currentQuestionIndex) / quizQuestions.length) * 100;
+    document.getElementById('progressBar').style.width = progress + '%';
+    
+    // Show question card, hide result card
+    document.getElementById('questionCard').classList.remove('hidden');
+    document.getElementById('resultCard').classList.add('hidden');
+    document.getElementById('finalResult').classList.add('hidden');
+}
+
+function checkAnswer() {
+    const userAnswer = document.getElementById('userAnswer').value.trim().toLowerCase();
+    const correctAnswer = quizQuestions[currentQuestionIndex][2].toLowerCase();
+    
+    const isCorrect = userAnswer === correctAnswer;
+    if (isCorrect) score++;
+    
+    const resultDiv = document.getElementById('answerResult');
+    if (isCorrect) {
+        resultDiv.innerHTML = `
+            <div class="text-green-600 text-xl mb-2">
+                <i class="fas fa-check-circle mr-2"></i>
+                Correct! 🎉
+            </div>
+        `;
+    } else {
+        resultDiv.innerHTML = `
+            <div class="text-red-600 text-xl mb-2">
+                <i class="fas fa-times-circle mr-2"></i>
+                Not quite right 😅
+            </div>
+            <p class="text-gray-600">The correct answer was: <strong>${quizQuestions[currentQuestionIndex][2]}</strong></p>
+        `;
+    }
+    
+    document.getElementById('questionCard').classList.add('hidden');
+    document.getElementById('resultCard').classList.remove('hidden');
+}
+
+function nextQuestion() {
+    currentQuestionIndex++;
+    showQuestion();
+}
+
+function showFinalResult() {
+    const percentage = Math.round((score / quizQuestions.length) * 100);
+    document.getElementById('finalScore').textContent = `${score}/${quizQuestions.length} (${percentage}%)`;
+    
+    document.getElementById('questionCard').classList.add('hidden');
+    document.getElementById('resultCard').classList.add('hidden');
+    document.getElementById('finalResult').classList.remove('hidden');
+    
+    // Update progress bar to 100%
+    document.getElementById('progressBar').style.width = '100%';
+}
+
+function restartQuiz() {
+    startQuiz();
+}
+
+function closeQuiz() {
+    document.getElementById('quizModal').classList.add('hidden');
+    document.getElementById('quizModal').classList.remove('flex');
+}
+
+// Enter key to check answer
+document.getElementById('userAnswer').addEventListener('keypress', function(e) {
+    if (e.key === 'Enter') {
+        checkAnswer();
+    }
+});
+</script>
+{% endblock %}
